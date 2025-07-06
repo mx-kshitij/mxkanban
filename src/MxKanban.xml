@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="mendix.mxkanban.MxKanban" pluginWidget="true" needsEntityContext="true" offlineCapable="true" supportedPlatform="Web"
+    xmlns="http://www.mendix.com/widget/1.0/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
+    <name>Mx Kanban</name>
+    <description>Kanban widget for mendix apps</description>
+    <icon/>
+    <properties>
+        <propertyGroup caption="General">
+            <property key="typeOfBoard" type="enumeration" defaultValue="single">
+                <caption>Type of board</caption>
+                <description></description>
+                <enumerationValues>
+                    <enumerationValue key="single">Single</enumerationValue>
+                    <enumerationValue key="multi">Multi</enumerationValue>
+                </enumerationValues>
+            </property>
+
+        </propertyGroup>
+    </properties>
+</widget>
