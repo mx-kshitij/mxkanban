@@ -1,0 +1,60 @@
+import { ReactElement, createElement } from "react";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { BoardData } from "../../types/kanban";
+import { Column } from "./Column";
+
+interface BoardProps {
+    board: BoardData;
+    onDragEnd?: (result: DropResult) => void;
+    onAddCard?: (columnId: string) => void;
+    onRemoveCard?: (columnId: string, cardId: string) => void;
+    showAddButton?: boolean;
+    showRemoveButton?: boolean;
+    className?: string;
+    title?: string;
+    wrapWithDragContext?: boolean;
+}
+
+export function Board({ 
+    board, 
+    onDragEnd, 
+    onAddCard, 
+    onRemoveCard, 
+    showAddButton = false, 
+    showRemoveButton = false,
+    className = "",
+    title,
+    wrapWithDragContext = true
+}: BoardProps): ReactElement {
+    const boardContent = (
+        <div className={`kanban-board-custom ${className}`}>
+            {board.columns.map((column) => (
+                <Column
+                    key={column.id}
+                    column={column}
+                    onAddCard={onAddCard}
+                    onRemoveCard={onRemoveCard}
+                    showAddButton={showAddButton}
+                    showRemoveButton={showRemoveButton}
+                />
+            ))}
+        </div>
+    );
+
+    const content = (
+        <div className="board-container">
+            {title && <h3 className="board-title">{title}</h3>}
+            {boardContent}
+        </div>
+    );
+
+    if (wrapWithDragContext && onDragEnd) {
+        return (
+            <DragDropContext onDragEnd={onDragEnd}>
+                {content}
+            </DragDropContext>
+        );
+    }
+
+    return content;
+}
