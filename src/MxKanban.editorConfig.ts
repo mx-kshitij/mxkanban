@@ -1,4 +1,5 @@
 import { MxKanbanPreviewProps } from "../typings/MxKanbanProps";
+import { hidePropertyIn } from "@mendix/pluggable-widgets-tools"
 
 export type Platform = "web" | "desktop";
 
@@ -100,32 +101,64 @@ export type PreviewProps =
     | DatasourceProps;
 
 export function getProperties(
-    _values: MxKanbanPreviewProps,
+    values: MxKanbanPreviewProps,
     defaultProperties: Properties /* , target: Platform*/
 ): Properties {
     // Do the values manipulation here to control the visibility of properties in Studio and Studio Pro conditionally.
-    /* Example
-    if (values.myProperty === "custom") {
-        delete defaultProperties.properties.myOtherProperty;
+    
+    if (values.typeOfBoard === "single") {
+        hidePropertyIn(defaultProperties, values, "m_content");
     }
-    */
+    else{
+        hidePropertyIn(defaultProperties, values, "s_content");
+    }
+    
     return defaultProperties;
 }
 
-// export function check(_values: MxKanbanPreviewProps): Problem[] {
-//     const errors: Problem[] = [];
-//     // Add errors to the above array to throw errors in Studio and Studio Pro.
-//     /* Example
-//     if (values.myProperty !== "custom") {
-//         errors.push({
-//             property: `myProperty`,
-//             message: `The value of 'myProperty' is different of 'custom'.`,
-//             url: "https://github.com/myrepo/mywidget"
-//         });
-//     }
-//     */
-//     return errors;
-// }
+export function check(_values: MxKanbanPreviewProps): Problem[] {
+    const errors: Problem[] = [];
+    // Add errors to the above array to throw errors in Studio and Studio Pro.
+
+    if (_values.typeOfBoard === "single" && _values.s_data_columns === null ) {
+        errors.push({
+            property: `s_data_columns`,
+            message: `The value of 'Columns' can not be null for single board widget.`,
+            url: ""
+        });
+    }
+    if (_values.typeOfBoard === "single" && _values.s_data_cards === null ) {
+        errors.push({
+            property: `s_data_cards`,
+            message: `The value of 'Cards' can not be null for single board widget.`,
+            url: ""
+        });
+    }
+
+    if (_values.typeOfBoard === "multi" && _values.m_data_boards === null ) {
+        errors.push({
+            property: `m_data_boards`,
+            message: `The value of 'Boards' can not be null for multi board widget.`,
+            url: ""
+        });
+    }
+    if (_values.typeOfBoard === "multi" && _values.m_data_columns === null ) {
+        errors.push({
+            property: `m_data_columns`,
+            message: `The value of 'Columns' can not be null for multi board widget.`,
+            url: ""
+        });
+    }
+    if (_values.typeOfBoard === "multi" && _values.m_data_cards === null ) {
+        errors.push({
+            property: `m_data_cards`,
+            message: `The value of 'Cards' can not be null for multi board widget.`,
+            url: ""
+        });
+    }
+
+    return errors;
+}
 
 // export function getPreview(values: MxKanbanPreviewProps, isDarkMode: boolean, version: number[]): PreviewProps {
 //     // Customize your pluggable widget appearance for Studio Pro.

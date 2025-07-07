@@ -5,11 +5,9 @@ import { Card as CardType } from "../../types/kanban";
 interface CardProps {
     card: CardType;
     index: number;
-    onRemove?: (cardId: string) => void;
-    showRemoveButton?: boolean;
 }
 
-export function Card({ card, index, onRemove, showRemoveButton = false }: CardProps): ReactElement {
+export function Card({ card, index }: CardProps): ReactElement {
     return (
         <Draggable key={card.id} draggableId={card.id} index={index}>
             {(provided, snapshot) => (
@@ -20,21 +18,8 @@ export function Card({ card, index, onRemove, showRemoveButton = false }: CardPr
                     className={`card ${snapshot.isDragging ? 'dragging' : ''}`}
                 >
                     <div className="card-content">
-                        <h5 className="card-title">{card.title}</h5>
-                        {card.description && (
-                            <p className="card-description">{card.description}</p>
-                        )}
+                        {card.content}
                     </div>
-                    {showRemoveButton && onRemove && (
-                        <button
-                            className="remove-card-btn"
-                            onClick={() => onRemove(card.id)}
-                            type="button"
-                            aria-label={`Remove ${card.title}`}
-                        >
-                            ×
-                        </button>
-                    )}
                 </div>
             )}
         </Draggable>

@@ -6,10 +6,6 @@ import { Column } from "./Column";
 interface BoardProps {
     board: BoardData;
     onDragEnd?: (result: DropResult) => void;
-    onAddCard?: (columnId: string) => void;
-    onRemoveCard?: (columnId: string, cardId: string) => void;
-    showAddButton?: boolean;
-    showRemoveButton?: boolean;
     className?: string;
     title?: string;
     wrapWithDragContext?: boolean;
@@ -18,10 +14,6 @@ interface BoardProps {
 export function Board({ 
     board, 
     onDragEnd, 
-    onAddCard, 
-    onRemoveCard, 
-    showAddButton = false, 
-    showRemoveButton = false,
     className = "",
     title,
     wrapWithDragContext = true
@@ -32,10 +24,6 @@ export function Board({
                 <Column
                     key={column.id}
                     column={column}
-                    onAddCard={onAddCard}
-                    onRemoveCard={onRemoveCard}
-                    showAddButton={showAddButton}
-                    showRemoveButton={showRemoveButton}
                 />
             ))}
         </div>

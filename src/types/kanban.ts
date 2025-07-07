@@ -1,7 +1,7 @@
 export interface Card {
     id: string;
-    title: string;
-    description?: string;
+    content?: any; // Mendix widget content
+    mendixObject?: any; // Original Mendix object
 }
 
 export interface Column {
