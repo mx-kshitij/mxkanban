@@ -110,6 +110,34 @@
     width: 100%;
 }
 
+/* Individual board height limit in multi-board layout */
+.multi-kanban-boards .board-container {
+    height: 300px;
+    overflow: hidden; /* Prevent nested scroll containers */
+}
+
+/* The actual board content within each container */
+.multi-kanban-boards .board-container .kanban-board-custom {
+    height: 100%;
+    min-height: unset; /* Override the default min-height: 400px */
+    overflow-x: auto; /* Allow horizontal scrolling for many columns */
+    overflow-y: hidden; /* No vertical scroll at board level */
+}
+
+/* Make each column handle its own vertical scrolling */
+.multi-kanban-boards .column-container {
+    height: 280px; /* Leave room for board title (300px - 20px margin) */
+    display: flex;
+    flex-direction: column;
+}
+
+.multi-kanban-boards .column-content {
+    flex: 1;
+    overflow-y: auto; /* Individual column scrolling */
+    overflow-x: hidden;
+    min-height: unset; /* Override the default min-height: 300px */
+}
+
 .board-title {
     margin: 0 0 20px 0;
     font-size: 18px;
