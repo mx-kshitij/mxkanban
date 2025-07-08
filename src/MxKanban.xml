@@ -18,7 +18,7 @@
                 </property>
             </propertyGroup>
             <propertyGroup caption="Changes">
-                <property key="changeJSON" type="attribute" onChange="onChangeEvent" required="true">
+                <property key="changeJSON" type="attribute" required="true">
                     <caption>Change attribute</caption>
                     <description>Stores a JSON on card drop. Will include id of card, old parent column, new parent column and sort order</description>
                     <attributeTypes>
@@ -28,6 +28,13 @@
                 <property key="onChangeEvent" type="action" required="false">
                     <caption>On card drop</caption>
                     <description>Event triggered when a card is dropped</description>
+                </property>
+                <property key="newCardOrderJSON" type="attribute" required="true">
+                    <caption>New order attribute</caption>
+                    <description>Stores a JSON of card order in the column on card drop</description>
+                    <attributeTypes>
+                        <attributeType name="String"/>
+                    </attributeTypes>
                 </property>
                 <property key="changeSuccess" type="attribute" required="true">
                     <caption>Change success</caption>
@@ -98,6 +105,14 @@
                 </property>
             </propertyGroup>
             <propertyGroup caption="Content">
+                <property key="s_useCustomColumnHeader" type="boolean" defaultValue="false">
+                    <caption>Custom column header</caption>
+                    <description></description>
+                </property>
+                <property key="s_column_content" type="widgets" required="false" dataSource="s_data_columns">
+                    <caption>Single board content for the column header</caption>
+                    <description>Content of the colum header</description>
+                </property>
                 <property key="s_content" type="widgets" required="false" dataSource="s_data_cards">
                     <caption>Single board content for card</caption>
                     <description>Content of a card</description>
@@ -181,6 +196,22 @@
                 </property>
             </propertyGroup>
             <propertyGroup caption="Content">
+                <property key="m_useCustomBoardHeader" type="boolean" defaultValue="false">
+                    <caption>Custom board header</caption>
+                    <description></description>
+                </property>
+                <property key="m_board_content" type="widgets" required="false" dataSource="m_data_boards">
+                    <caption>Multi board content for board header</caption>
+                    <description>Content of a card</description>
+                </property>
+                <property key="m_useCustomColumnHeader" type="boolean" defaultValue="false">
+                    <caption>Custom column header</caption>
+                    <description></description>
+                </property>
+                <property key="m_column_content" type="widgets" required="false" dataSource="m_data_columns">
+                    <caption>Multi board content for column header</caption>
+                    <description>Content of a card</description>
+                </property>
                 <property key="m_content" type="widgets" required="false" dataSource="m_data_cards">
                     <caption>Multi board content for card</caption>
                     <description>Content of a card</description>

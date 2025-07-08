@@ -113,9 +113,17 @@ export function getProperties(
         hidePropertyIn(defaultProperties, values, "s_content");
     }
 
-    if(!values.useCustomLoading){
+    if(!values.useCustomLoading)
         hidePropertyIn(defaultProperties, values, "loading_content");
-    }
+
+    if(!values.s_useCustomColumnHeader)
+        hidePropertyIn(defaultProperties, values, "s_column_content");
+    
+    if(!values.m_useCustomColumnHeader)
+        hidePropertyIn(defaultProperties, values, "m_column_content");
+
+    if(!values.m_useCustomBoardHeader)
+        hidePropertyIn(defaultProperties, values, "m_board_content");
     
     return defaultProperties;
 }
@@ -123,6 +131,22 @@ export function getProperties(
 export function check(_values: MxKanbanPreviewProps): Problem[] {
     const errors: Problem[] = [];
     // Add errors to the above array to throw errors in Studio and Studio Pro.
+
+    // Common validations for both single and multi board
+    if (!_values.changeJSON) {
+        errors.push({
+            property: `changeJSON`,
+            message: `Change JSON property is required for tracking card movements.`,
+            url: ""
+        });
+    }
+    if (!_values.newCardOrderJSON) {
+        errors.push({
+            property: `newCardOrderJSON`,
+            message: `New Card Order JSON property is required for tracking card positions.`,
+            url: ""
+        });
+    }
 
     // Single Board Validations
     if (_values.typeOfBoard === "single") {

@@ -5,30 +5,25 @@ import { handleSingleBoardDrag, handleMultiBoardDrag } from "../utils/dragUtils"
 
 export const useKanbanBoard = (
     initialBoard: BoardData, 
-    onDropDetails?: (details: CardDropDetails) => void,
+    onDropDetails?: (details: CardDropDetails, updatedBoard: BoardData) => void,
     changeSuccess?: { value?: boolean; setValue: (value: boolean) => void }
 ) => {
     const [board, setBoard] = useState<BoardData>(initialBoard);
 
     // Only sync on initial mount - don't auto-sync on prop changes to prevent snap-back
     useEffect(() => {
-        console.info('Initial single board data sync on mount');
         setBoard(initialBoard);
     }, []); // Empty deps = only runs on mount
 
     // Track changeSuccess and re-render widget on failure
     useEffect(() => {
-        console.info('Single Board - changeSuccess value:', changeSuccess?.value);
         if (changeSuccess?.value === false) {
-            console.info('=== EXTERNAL VERIFICATION FAILED - RE-RENDERING WIDGET ===');
-            console.info('Re-rendering from current Mendix data to restore original state');
             
             // Re-render widget from current Mendix data (this will restore the original state)
             setBoard(initialBoard);
             
             // Reset the success flag
             changeSuccess.setValue(true);
-            console.info('=== WIDGET RE-RENDER COMPLETE ===');
         }
     }, [changeSuccess?.value, changeSuccess, initialBoard]);
 
@@ -40,12 +35,11 @@ export const useKanbanBoard = (
         
         // Optimistically update the UI
         setBoard(updatedBoard);
-        console.info('Card dropped in single board:', dropDetails);
         
         // Call the drop details callback if provided
         if (onDropDetails) {
             try {
-                onDropDetails(dropDetails);
+                onDropDetails(dropDetails, updatedBoard);
             } catch (error) {
                 console.error('Error in drop handler:', error);
                 // The external action will handle success/failure via changeSuccess prop
@@ -55,7 +49,6 @@ export const useKanbanBoard = (
 
     // Function to force refresh from external data (when needed)
     const forceRefresh = useCallback(() => {
-        console.info('Force refreshing single board from external data');
         setBoard(initialBoard);
     }, [initialBoard]);
 
@@ -69,30 +62,25 @@ export const useKanbanBoard = (
 
 export const useMultiKanbanBoard = (
     initialBoards: MultiBoard[],
-    onDropDetails?: (details: CardDropDetails) => void,
+    onDropDetails?: (details: CardDropDetails, updatedBoards: MultiBoard[]) => void,
     changeSuccess?: { value?: boolean; setValue: (value: boolean) => void }
 ) => {
     const [boards, setBoards] = useState<MultiBoard[]>(initialBoards);
 
     // Only sync on initial mount - don't auto-sync on prop changes to prevent snap-back
     useEffect(() => {
-        console.info('Initial multi-board data sync on mount');
         setBoards(initialBoards);
     }, []); // Empty deps = only runs on mount
 
     // Track changeSuccess and re-render widget on failure
     useEffect(() => {
-        console.info('Multi Board - changeSuccess value:', changeSuccess?.value);
         if (changeSuccess?.value === false) {
-            console.info('=== EXTERNAL VERIFICATION FAILED - RE-RENDERING WIDGET ===');
-            console.info('Re-rendering from current Mendix data to restore original state');
             
             // Re-render widget from current Mendix data (this will restore the original state)
             setBoards(initialBoards);
             
             // Reset the success flag
             changeSuccess.setValue(true);
-            console.info('=== WIDGET RE-RENDER COMPLETE ===');
         }
     }, [changeSuccess?.value, changeSuccess, initialBoards]);
     
@@ -104,12 +92,11 @@ export const useMultiKanbanBoard = (
         
         // Optimistically update the UI
         setBoards(updatedBoards);
-        console.info('Card dropped in multi board:', dropDetails);
         
         // Call the drop details callback if provided
         if (onDropDetails) {
             try {
-                onDropDetails(dropDetails);
+                onDropDetails(dropDetails, updatedBoards);
             } catch (error) {
                 console.error('Error in drop handler:', error);
                 // The external action will handle success/failure via changeSuccess prop
@@ -119,7 +106,6 @@ export const useMultiKanbanBoard = (
 
     // Function to force refresh from external data (when needed)
     const forceRefresh = useCallback(() => {
-        console.info('Force refreshing multi-board from external data');
         setBoards(initialBoards);
     }, [initialBoards]);
 

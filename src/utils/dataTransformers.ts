@@ -48,7 +48,8 @@ export const transformSingleBoardData = (props: MxKanbanContainerProps): BoardDa
                 id: columnId,
                 title: columnId, // You can enhance this with proper title attribute
                 cards: columnCards,
-                sortOrder: columnSortOrder
+                sortOrder: columnSortOrder,
+                customHeaderContent: props.s_useCustomColumnHeader ? props.s_column_content?.get(columnItem) : undefined
             });
         }
     });
@@ -124,7 +125,8 @@ export const transformMultiBoardData = (props: MxKanbanContainerProps): MultiBoa
                         id: columnId,
                         title: columnId, // You can enhance this with proper title attribute
                         cards: columnCards,
-                        sortOrder: columnSortOrder
+                        sortOrder: columnSortOrder,
+                        customHeaderContent: props.m_useCustomColumnHeader ? props.m_column_content?.get(columnItem) : undefined
                     });
                 }
             });
@@ -136,7 +138,8 @@ export const transformMultiBoardData = (props: MxKanbanContainerProps): MultiBoa
                 id: boardId,
                 title: boardId, // You can enhance this with proper title attribute
                 board: { columns },
-                sortOrder: boardSortOrder
+                sortOrder: boardSortOrder,
+                customHeaderContent: props.m_useCustomBoardHeader ? props.m_board_content?.get(boardItem) : undefined
             });
         } else {
             console.warn(`Skipping board ${boardId} - missing data:`, {

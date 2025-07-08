@@ -5,7 +5,7 @@ import { Board } from "./shared";
 import "../ui/KanbanBoard.css";
 import { MxKanbanContainerProps } from "typings/MxKanbanProps";
 import { transformMultiBoardData } from "../utils/dataTransformers";
-import { CardDropDetails } from "src/types/kanban";
+import { CardDropDetails, MultiBoard } from "src/types/kanban";
 
 function MultiBoardKanbanComponent(props: MxKanbanContainerProps): ReactElement {
     // Store initial boards data
@@ -24,7 +24,6 @@ function MultiBoardKanbanComponent(props: MxKanbanContainerProps): ReactElement 
         
         // Update initial data only on failure for rollback
         if (props.changeSuccess?.value === false) {
-            console.info('Updating initial boards data for rollback');
             const freshData = transformMultiBoardData(props);
             initialBoardsRef.current = freshData;
             return freshData;
@@ -35,7 +34,7 @@ function MultiBoardKanbanComponent(props: MxKanbanContainerProps): ReactElement 
     }, [props.changeSuccess?.value]); // Only depend on changeSuccess, not the data props
 
     // Handle card drop details
-    const handleDropDetails = (details: CardDropDetails) => {
+    const handleDropDetails = (details: CardDropDetails, updatedBoards: MultiBoard[]) => {
         try {
             const dropDetailsJson = {
                 cardId: details.cardId,
@@ -46,11 +45,35 @@ function MultiBoardKanbanComponent(props: MxKanbanContainerProps): ReactElement 
                 timestamp: new Date().toISOString()
             };
 
-            console.log('Multi Board - Card Drop Details:', dropDetailsJson);
-
             // Set the JSON value to the changeJSON prop
             if (props.changeJSON) {
                 props.changeJSON.setValue(JSON.stringify(dropDetailsJson));
+            }
+
+            // Create newCardOrderJSON for the destination column using the UPDATED boards state
+            let destinationColumn = null;
+            for (const multiBoard of updatedBoards) {
+                const column = multiBoard.board.columns.find(col => col.id === details.newParentColumnId);
+                if (column) {
+                    destinationColumn = column;
+                    break;
+                }
+            }
+            
+            if (destinationColumn && props.newCardOrderJSON) {
+                const cardOrderArray = destinationColumn.cards.map((card, index) => ({
+                    cardId: card.id,
+                    order: index
+                }));
+                
+                props.newCardOrderJSON.setValue(JSON.stringify(cardOrderArray));
+            }
+
+            // Execute onChangeEvent action if available
+            if (props.onChangeEvent && props.onChangeEvent.canExecute) {
+                props.onChangeEvent.execute();
+            } else if (props.onChangeEvent) {
+                console.warn('Multi Board - onChangeEvent action cannot be executed (canExecute is false)');
             }
         } catch (error) {
             console.error('Error handling drop details:', error);
@@ -74,7 +97,9 @@ function MultiBoardKanbanComponent(props: MxKanbanContainerProps): ReactElement 
                         key={multiBoard.id}
                         board={multiBoard.board}
                         title={multiBoard.title}
+                        customHeaderContent={multiBoard.customHeaderContent}
                         wrapWithDragContext={false}
+                        collapsible={true}
                     />
                 ))}
             </div>

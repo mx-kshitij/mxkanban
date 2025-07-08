@@ -4,7 +4,7 @@
  * @author Mendix Widgets Framework Team
  */
 import { ComponentType, CSSProperties, ReactNode } from "react";
-import { EditableValue, ListValue, ListAttributeValue, ListWidgetValue } from "mendix";
+import { ActionValue, EditableValue, ListValue, ListAttributeValue, ListWidgetValue } from "mendix";
 import { Big } from "big.js";
 
 export type TypeOfBoardEnum = "single" | "multi";
@@ -16,6 +16,8 @@ export interface MxKanbanContainerProps {
     tabIndex?: number;
     typeOfBoard: TypeOfBoardEnum;
     changeJSON: EditableValue<string>;
+    onChangeEvent?: ActionValue;
+    newCardOrderJSON: EditableValue<string>;
     changeSuccess: EditableValue<boolean>;
     useCustomLoading: boolean;
     loading_content?: ReactNode;
@@ -26,6 +28,8 @@ export interface MxKanbanContainerProps {
     s_card_id?: ListAttributeValue<string>;
     s_card_parent?: ListAttributeValue<string>;
     s_card_sortAttr?: ListAttributeValue<Big>;
+    s_useCustomColumnHeader: boolean;
+    s_column_content?: ListWidgetValue;
     s_content?: ListWidgetValue;
     m_data_boards?: ListValue;
     m_board_id?: ListAttributeValue<string>;
@@ -38,6 +42,10 @@ export interface MxKanbanContainerProps {
     m_card_id?: ListAttributeValue<string>;
     m_card_parent?: ListAttributeValue<string>;
     m_card_sortAttr?: ListAttributeValue<Big>;
+    m_useCustomBoardHeader: boolean;
+    m_board_content?: ListWidgetValue;
+    m_useCustomColumnHeader: boolean;
+    m_column_content?: ListWidgetValue;
     m_content?: ListWidgetValue;
 }
 
@@ -54,6 +62,7 @@ export interface MxKanbanPreviewProps {
     typeOfBoard: TypeOfBoardEnum;
     changeJSON: string;
     onChangeEvent: {} | null;
+    newCardOrderJSON: string;
     changeSuccess: string;
     useCustomLoading: boolean;
     loading_content: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
@@ -64,6 +73,8 @@ export interface MxKanbanPreviewProps {
     s_card_id: string;
     s_card_parent: string;
     s_card_sortAttr: string;
+    s_useCustomColumnHeader: boolean;
+    s_column_content: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
     s_content: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
     m_data_boards: {} | { caption: string } | { type: string } | null;
     m_board_id: string;
@@ -76,5 +87,9 @@ export interface MxKanbanPreviewProps {
     m_card_id: string;
     m_card_parent: string;
     m_card_sortAttr: string;
+    m_useCustomBoardHeader: boolean;
+    m_board_content: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
+    m_useCustomColumnHeader: boolean;
+    m_column_content: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
     m_content: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
 }

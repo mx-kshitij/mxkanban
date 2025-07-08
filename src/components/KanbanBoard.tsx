@@ -4,7 +4,7 @@ import { Board } from "./shared";
 import "../ui/KanbanBoard.css";
 import { MxKanbanContainerProps } from "typings/MxKanbanProps";
 import { transformSingleBoardData } from "../utils/dataTransformers";
-import { CardDropDetails } from "../types/kanban";
+import { CardDropDetails, BoardData } from "../types/kanban";
 
 function KanbanBoardComponent(props: MxKanbanContainerProps): ReactElement {
     // Store initial board data
@@ -23,7 +23,6 @@ function KanbanBoardComponent(props: MxKanbanContainerProps): ReactElement {
         
         // Update initial data only on failure for rollback
         if (props.changeSuccess?.value === false) {
-            console.info('Updating initial board data for rollback');
             const freshData = transformSingleBoardData(props);
             initialBoardRef.current = freshData;
             return freshData;
@@ -34,7 +33,7 @@ function KanbanBoardComponent(props: MxKanbanContainerProps): ReactElement {
     }, [props.changeSuccess?.value]); // Only depend on changeSuccess, not the data props
 
     // Handle card drop details
-    const handleDropDetails = (details: CardDropDetails) => {
+    const handleDropDetails = (details: CardDropDetails, updatedBoard: BoardData) => {
         try {
             const dropDetailsJson = {
                 cardId: details.cardId,
@@ -48,6 +47,24 @@ function KanbanBoardComponent(props: MxKanbanContainerProps): ReactElement {
             // Set the JSON value to the changeJSON prop
             if (props.changeJSON) {
                 props.changeJSON.setValue(JSON.stringify(dropDetailsJson));
+            }
+
+            // Create newCardOrderJSON for the destination column using the UPDATED board state
+            const destinationColumn = updatedBoard.columns.find(col => col.id === details.newParentColumnId);
+            if (destinationColumn && props.newCardOrderJSON) {
+                const cardOrderArray = destinationColumn.cards.map((card, index) => ({
+                    cardId: card.id,
+                    order: index
+                }));
+                
+                props.newCardOrderJSON.setValue(JSON.stringify(cardOrderArray));
+            }
+
+            // Execute onChangeEvent action if available
+            if (props.onChangeEvent && props.onChangeEvent.canExecute) {
+                props.onChangeEvent.execute();
+            } else if (props.onChangeEvent) {
+                console.warn('Single Board - onChangeEvent action cannot be executed (canExecute is false)');
             }
         } catch (error) {
             console.error('Error handling drop details:', error);

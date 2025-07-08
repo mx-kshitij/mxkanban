@@ -11,7 +11,13 @@ const ColumnComponent = ({ column }: ColumnProps): ReactElement => {
     return (
         <div className="column-container">
             <div className="column-header">
-                <h4>{column.title}</h4>
+                {column.customHeaderContent ? (
+                    <div className="custom-column-header">
+                        {column.customHeaderContent}
+                    </div>
+                ) : (
+                    <h4>{column.title}</h4>
+                )}
             </div>
             <Droppable droppableId={column.id}>
                 {(provided, snapshot) => (

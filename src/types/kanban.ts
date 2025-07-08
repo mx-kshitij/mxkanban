@@ -12,6 +12,7 @@ export interface Column {
     title: string;
     cards: Card[];
     sortOrder?: Big; // Sort order from Mendix
+    customHeaderContent?: any; // Custom header content for column
 }
 
 export interface BoardData {
@@ -23,6 +24,7 @@ export interface MultiBoard {
     title: string;
     board: BoardData;
     sortOrder?: Big; // Sort order from Mendix
+    customHeaderContent?: any; // Custom header content for board
 }
 
 export interface KanbanBoardProps {
