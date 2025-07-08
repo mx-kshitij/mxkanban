@@ -7,14 +7,46 @@
     <icon/>
     <properties>
         <propertyGroup caption="General">
-            <property key="typeOfBoard" type="enumeration" defaultValue="single">
-                <caption>Type of board</caption>
-                <description></description>
-                <enumerationValues>
-                    <enumerationValue key="single">Single</enumerationValue>
-                    <enumerationValue key="multi">Multi</enumerationValue>
-                </enumerationValues>
-            </property>
+            <propertyGroup caption="Configuration">
+                <property key="typeOfBoard" type="enumeration" defaultValue="single">
+                    <caption>Type of board</caption>
+                    <description></description>
+                    <enumerationValues>
+                        <enumerationValue key="single">Single</enumerationValue>
+                        <enumerationValue key="multi">Multi</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Changes">
+                <property key="changeJSON" type="attribute" onChange="onChangeEvent" required="true">
+                    <caption>Change attribute</caption>
+                    <description>Stores a JSON on card drop. Will include id of card, old parent column, new parent column and sort order</description>
+                    <attributeTypes>
+                        <attributeType name="String"/>
+                    </attributeTypes>
+                </property>
+                <property key="onChangeEvent" type="action" required="false">
+                    <caption>On card drop</caption>
+                    <description>Event triggered when a card is dropped</description>
+                </property>
+                <property key="changeSuccess" type="attribute" required="true">
+                    <caption>Change success</caption>
+                    <description>Boolean to track if movement was a success</description>
+                    <attributeTypes>
+                        <attributeType name="Boolean"/>
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Loading content">
+                <property key="useCustomLoading" type="boolean" defaultValue="false">
+                    <caption>Use custom loading</caption>
+                    <description></description>
+                </property>
+                <property key="loading_content" type="widgets" required="false">
+                    <caption>Loading content</caption>
+                    <description>Content of te loading screen</description>
+                </property>
+            </propertyGroup>
         </propertyGroup>
 
         <propertyGroup caption="Single">
@@ -28,6 +60,13 @@
                     <description></description>
                     <attributeTypes>
                         <attributeType name="String"/>
+                    </attributeTypes>
+                </property>
+                <property key="s_column_sortAttr" type="attribute" required="false" dataSource="s_data_columns">
+                    <caption>Sort by</caption>
+                    <description></description>
+                    <attributeTypes>
+                        <attributeType name="Integer"/>
                     </attributeTypes>
                 </property>
             </propertyGroup>
@@ -48,6 +87,13 @@
                     <description></description>
                     <attributeTypes>
                         <attributeType name="String"/>
+                    </attributeTypes>
+                </property>
+                <property key="s_card_sortAttr" type="attribute" required="false" dataSource="s_data_cards">
+                    <caption>Sort by</caption>
+                    <description></description>
+                    <attributeTypes>
+                        <attributeType name="Integer"/>
                     </attributeTypes>
                 </property>
             </propertyGroup>
@@ -72,6 +118,13 @@
                         <attributeType name="String"/>
                     </attributeTypes>
                 </property>
+                <property key="m_board_sortAttr" type="attribute" required="false" dataSource="m_data_boards">
+                    <caption>Sort by</caption>
+                    <description></description>
+                    <attributeTypes>
+                        <attributeType name="Integer"/>
+                    </attributeTypes>
+                </property>
             </propertyGroup>
             <propertyGroup caption="Columns">
                 <property key="m_data_columns" type="datasource" isList="true" required="false">
@@ -90,6 +143,13 @@
                     <description></description>
                     <attributeTypes>
                         <attributeType name="String"/>
+                    </attributeTypes>
+                </property>
+                <property key="m_column_sortAttr" type="attribute" required="false" dataSource="m_data_columns">
+                    <caption>Sort by</caption>
+                    <description></description>
+                    <attributeTypes>
+                        <attributeType name="Integer"/>
                     </attributeTypes>
                 </property>
             </propertyGroup>
@@ -112,6 +172,13 @@
                         <attributeType name="String"/>
                     </attributeTypes>
                 </property>
+                <property key="m_card_sortAttr" type="attribute" required="false" dataSource="m_data_cards">
+                    <caption>Sort by</caption>
+                    <description></description>
+                    <attributeTypes>
+                        <attributeType name="Integer"/>
+                    </attributeTypes>
+                </property>
             </propertyGroup>
             <propertyGroup caption="Content">
                 <property key="m_content" type="widgets" required="false" dataSource="m_data_cards">
@@ -119,13 +186,6 @@
                     <description>Content of a card</description>
                 </property>
             </propertyGroup>
-        </propertyGroup>
-
-        <propertyGroup caption="Events">
-            <property key="onCardDrop" type="action" required="false">
-                <caption>On card drop</caption>
-                <description>Event triggered when a card is dropped</description>
-            </property>
         </propertyGroup>
     </properties>
 </widget>

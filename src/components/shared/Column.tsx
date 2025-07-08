@@ -1,4 +1,4 @@
-import { ReactElement, createElement } from "react";
+import { ReactElement, createElement, memo } from "react";
 import { Droppable } from "react-beautiful-dnd";
 import { Column as ColumnType } from "../../types/kanban";
 import { Card } from "./Card";
@@ -7,7 +7,7 @@ interface ColumnProps {
     column: ColumnType;
 }
 
-export function Column({ column }: ColumnProps): ReactElement {
+const ColumnComponent = ({ column }: ColumnProps): ReactElement => {
     return (
         <div className="column-container">
             <div className="column-header">
@@ -35,4 +35,6 @@ export function Column({ column }: ColumnProps): ReactElement {
             </Droppable>
         </div>
     );
-}
+};
+
+export const Column = memo(ColumnComponent);

@@ -112,6 +112,10 @@ export function getProperties(
     else{
         hidePropertyIn(defaultProperties, values, "s_content");
     }
+
+    if(!values.useCustomLoading){
+        hidePropertyIn(defaultProperties, values, "loading_content");
+    }
     
     return defaultProperties;
 }
@@ -120,41 +124,142 @@ export function check(_values: MxKanbanPreviewProps): Problem[] {
     const errors: Problem[] = [];
     // Add errors to the above array to throw errors in Studio and Studio Pro.
 
-    if (_values.typeOfBoard === "single" && _values.s_data_columns === null ) {
-        errors.push({
-            property: `s_data_columns`,
-            message: `The value of 'Columns' can not be null for single board widget.`,
-            url: ""
-        });
-    }
-    if (_values.typeOfBoard === "single" && _values.s_data_cards === null ) {
-        errors.push({
-            property: `s_data_cards`,
-            message: `The value of 'Cards' can not be null for single board widget.`,
-            url: ""
-        });
+    // Single Board Validations
+    if (_values.typeOfBoard === "single") {
+        if (_values.s_data_columns === null) {
+            errors.push({
+                property: `s_data_columns`,
+                message: `The value of 'Columns' can not be null for single board widget.`,
+                url: ""
+            });
+        }
+        if (_values.s_data_cards === null) {
+            errors.push({
+                property: `s_data_cards`,
+                message: `The value of 'Cards' can not be null for single board widget.`,
+                url: ""
+            });
+        }
+        
+        // Single Board Sorting Attribute Validations
+        if (!_values.s_column_sortAttr || _values.s_column_sortAttr.trim() === "") {
+            errors.push({
+                property: `s_column_sortAttr`,
+                message: `Column sort attribute is required for single board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.s_card_sortAttr || _values.s_card_sortAttr.trim() === "") {
+            errors.push({
+                property: `s_card_sortAttr`,
+                message: `Card sort attribute is required for single board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.s_column_id || _values.s_column_id.trim() === "") {
+            errors.push({
+                property: `s_column_id`,
+                message: `Column ID is required for single board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.s_card_id || _values.s_card_id.trim() === "") {
+            errors.push({
+                property: `s_card_id`,
+                message: `Card ID is required for single board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.s_card_parent || _values.s_card_parent.trim() === "") {
+            errors.push({
+                property: `s_card_parent`,
+                message: `Card Parent is required for single board widget.`,
+                url: ""
+            });
+        }
     }
 
-    if (_values.typeOfBoard === "multi" && _values.m_data_boards === null ) {
-        errors.push({
-            property: `m_data_boards`,
-            message: `The value of 'Boards' can not be null for multi board widget.`,
-            url: ""
-        });
-    }
-    if (_values.typeOfBoard === "multi" && _values.m_data_columns === null ) {
-        errors.push({
-            property: `m_data_columns`,
-            message: `The value of 'Columns' can not be null for multi board widget.`,
-            url: ""
-        });
-    }
-    if (_values.typeOfBoard === "multi" && _values.m_data_cards === null ) {
-        errors.push({
-            property: `m_data_cards`,
-            message: `The value of 'Cards' can not be null for multi board widget.`,
-            url: ""
-        });
+    // Multi Board Validations
+    if (_values.typeOfBoard === "multi") {
+        if (_values.m_data_boards === null) {
+            errors.push({
+                property: `m_data_boards`,
+                message: `The value of 'Boards' can not be null for multi board widget.`,
+                url: ""
+            });
+        }
+        if (_values.m_data_columns === null) {
+            errors.push({
+                property: `m_data_columns`,
+                message: `The value of 'Columns' can not be null for multi board widget.`,
+                url: ""
+            });
+        }
+        if (_values.m_data_cards === null) {
+            errors.push({
+                property: `m_data_cards`,
+                message: `The value of 'Cards' can not be null for multi board widget.`,
+                url: ""
+            });
+        }
+        
+        // Multi Board Sorting Attribute Validations
+        if (!_values.m_board_sortAttr || _values.m_board_sortAttr.trim() === "") {
+            errors.push({
+                property: `m_board_sortAttr`,
+                message: `Board sort attribute is required for multi board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.m_column_sortAttr || _values.m_column_sortAttr.trim() === "") {
+            errors.push({
+                property: `m_column_sortAttr`,
+                message: `Column sort attribute is required for multi board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.m_card_sortAttr || _values.m_card_sortAttr.trim() === "") {
+            errors.push({
+                property: `m_card_sortAttr`,
+                message: `Card sort attribute is required for multi board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.m_board_id || _values.m_board_id.trim() === "") {
+            errors.push({
+                property: `m_board_id`,
+                message: `Board ID is required for multi board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.m_column_id || _values.m_column_id.trim() === "") {
+            errors.push({
+                property: `m_column_id`,
+                message: `Column ID is required for multi board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.m_column_parent || _values.m_column_parent.trim() === "") {
+            errors.push({
+                property: `m_column_parent`,
+                message: `Column Parent is required for multi board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.m_card_id || _values.m_card_id.trim() === "") {
+            errors.push({
+                property: `m_card_id`,
+                message: `Card ID is required for multi board widget.`,
+                url: ""
+            });
+        }
+        if (!_values.m_card_parent || _values.m_card_parent.trim() === "") {
+            errors.push({
+                property: `m_card_parent`,
+                message: `Card Parent is required for multi board widget.`,
+                url: ""
+            });
+        }
     }
 
     return errors;

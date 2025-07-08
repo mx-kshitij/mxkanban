@@ -1,4 +1,4 @@
-import { ReactElement, createElement } from "react";
+import { ReactElement, createElement, memo } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { BoardData } from "../../types/kanban";
 import { Column } from "./Column";
@@ -11,13 +11,13 @@ interface BoardProps {
     wrapWithDragContext?: boolean;
 }
 
-export function Board({ 
+const BoardComponent = ({ 
     board, 
     onDragEnd, 
     className = "",
     title,
     wrapWithDragContext = true
-}: BoardProps): ReactElement {
+}: BoardProps): ReactElement => {
     const boardContent = (
         <div className={`kanban-board-custom ${className}`}>
             {board.columns.map((column) => (
@@ -45,4 +45,6 @@ export function Board({
     }
 
     return content;
-}
+};
+
+export const Board = memo(BoardComponent);

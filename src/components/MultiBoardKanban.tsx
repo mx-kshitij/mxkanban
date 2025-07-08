@@ -1,24 +1,73 @@
-import { ReactElement, createElement, useMemo } from "react";
+import { ReactElement, createElement, useMemo, memo, useRef } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { useMultiKanbanBoard } from "../hooks/useKanbanBoard";
 import { Board } from "./shared";
 import "../ui/KanbanBoard.css";
 import { MxKanbanContainerProps } from "typings/MxKanbanProps";
 import { transformMultiBoardData } from "../utils/dataTransformers";
+import { CardDropDetails } from "src/types/kanban";
 
-export function MultiBoardKanban(props: MxKanbanContainerProps): ReactElement {
+function MultiBoardKanbanComponent(props: MxKanbanContainerProps): ReactElement {
+    // Store initial boards data
+    const initialBoardsRef = useRef(transformMultiBoardData(props));
+    const isInitialMount = useRef(true);
     
-    // Transform Mendix data to internal structure
+    // Only update initial data on mount or when explicitly needed for rollback
     const boardsData = useMemo(() => {
-        const result = transformMultiBoardData(props);
-        console.debug('transformMultiBoardData result:', result);
-        return result;
-    }, [props.m_data_boards, props.m_data_columns, props.m_data_cards, props.m_board_id, props.m_column_id, props.m_column_parent, props.m_card_id, props.m_card_parent, props.m_content]);
+        // On initial mount, always use the fresh data
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            const freshData = transformMultiBoardData(props);
+            initialBoardsRef.current = freshData;
+            return freshData;
+        }
+        
+        // Update initial data only on failure for rollback
+        if (props.changeSuccess?.value === false) {
+            console.info('Updating initial boards data for rollback');
+            const freshData = transformMultiBoardData(props);
+            initialBoardsRef.current = freshData;
+            return freshData;
+        }
+        
+        // Otherwise, use the stored initial data (prevents snap-back on successful operations)
+        return initialBoardsRef.current;
+    }, [props.changeSuccess?.value]); // Only depend on changeSuccess, not the data props
 
-    const { boards, onDragEnd } = useMultiKanbanBoard(boardsData);
+    // Handle card drop details
+    const handleDropDetails = (details: CardDropDetails) => {
+        try {
+            const dropDetailsJson = {
+                cardId: details.cardId,
+                oldParentColumnId: details.oldParentColumnId,
+                newParentColumnId: details.newParentColumnId,
+                oldSortValue: details.oldSortValue.toNumber(),
+                newSortValue: details.newSortValue.toNumber(),
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('Multi Board - Card Drop Details:', dropDetailsJson);
+
+            // Set the JSON value to the changeJSON prop
+            if (props.changeJSON) {
+                props.changeJSON.setValue(JSON.stringify(dropDetailsJson));
+            }
+        } catch (error) {
+            console.error('Error handling drop details:', error);
+            // Re-throw error so the hook can handle rollback
+            throw error;
+        }
+    };
+
+    const { boards, onDragEnd } = useMultiKanbanBoard(boardsData, handleDropDetails, props.changeSuccess);
+    
+    // Create a unique key that changes when boards change to force re-render
+    const dragContextKey = useMemo(() => {
+        return JSON.stringify(boards.map(b => b.board.columns.map(c => c.cards.map(card => card.id))));
+    }, [boards]);
 
     return (
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext key={dragContextKey} onDragEnd={onDragEnd}>
             <div className={`multi-kanban-boards ${props.class || ""}`} tabIndex={props.tabIndex}>
                 {boards.map((multiBoard) => (
                     <Board
@@ -32,3 +81,28 @@ export function MultiBoardKanban(props: MxKanbanContainerProps): ReactElement {
         </DragDropContext>
     );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export const MultiBoardKanban = memo(MultiBoardKanbanComponent, (prevProps, nextProps) => {
+    // Only re-render if essential props changed
+    const essentialPropsChanged = (
+        prevProps.m_data_boards !== nextProps.m_data_boards ||
+        prevProps.m_data_columns !== nextProps.m_data_columns ||
+        prevProps.m_data_cards !== nextProps.m_data_cards ||
+        prevProps.m_board_id !== nextProps.m_board_id ||
+        prevProps.m_column_id !== nextProps.m_column_id ||
+        prevProps.m_column_parent !== nextProps.m_column_parent ||
+        prevProps.m_card_id !== nextProps.m_card_id ||
+        prevProps.m_card_parent !== nextProps.m_card_parent ||
+        prevProps.m_content !== nextProps.m_content ||
+        prevProps.m_board_sortAttr !== nextProps.m_board_sortAttr ||
+        prevProps.m_column_sortAttr !== nextProps.m_column_sortAttr ||
+        prevProps.m_card_sortAttr !== nextProps.m_card_sortAttr ||
+        prevProps.changeSuccess?.value !== nextProps.changeSuccess?.value ||
+        prevProps.class !== nextProps.class ||
+        prevProps.tabIndex !== nextProps.tabIndex
+    );
+    
+    // Return true if props are equal (don't re-render), false if they changed (re-render)
+    return !essentialPropsChanged;
+});

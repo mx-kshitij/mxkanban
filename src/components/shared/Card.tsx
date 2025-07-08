@@ -1,4 +1,4 @@
-import { ReactElement, createElement } from "react";
+import { ReactElement, createElement, memo } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { Card as CardType } from "../../types/kanban";
 
@@ -7,7 +7,7 @@ interface CardProps {
     index: number;
 }
 
-export function Card({ card, index }: CardProps): ReactElement {
+const CardComponent = ({ card, index }: CardProps): ReactElement => {
     return (
         <Draggable key={card.id} draggableId={card.id} index={index}>
             {(provided, snapshot) => (
@@ -24,4 +24,6 @@ export function Card({ card, index }: CardProps): ReactElement {
             )}
         </Draggable>
     );
-}
+};
+
+export const Card = memo(CardComponent);

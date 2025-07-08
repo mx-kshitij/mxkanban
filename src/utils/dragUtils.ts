@@ -1,5 +1,8 @@
 import { DropResult } from "react-beautiful-dnd";
-import { BoardData, Column, MultiBoard } from "../types/kanban";
+import { BoardData, Column, MultiBoard, CardDropDetails } from "../types/kanban";
+import { Big } from "big.js";
+
+const DEFAULT_SORT_ORDER = new Big(0);
 
 /**
  * Finds a column within a board by its ID
@@ -33,7 +36,7 @@ export const findColumnInBoards = (
 export const handleSingleBoardDrag = (
     board: BoardData,
     result: DropResult
-): BoardData | null => {
+): { updatedBoard: BoardData; dropDetails: CardDropDetails } | null => {
     const { source, destination } = result;
 
     if (!destination) return null;
@@ -52,10 +55,42 @@ export const handleSingleBoardDrag = (
     if (!sourceColumn || !destColumn) return null;
 
     const card = sourceColumn.cards[source.index];
-    sourceColumn.cards.splice(source.index, 1);
-    destColumn.cards.splice(destination.index, 0, card);
+    const oldSortValue = card.sortOrder || DEFAULT_SORT_ORDER;
 
-    return newBoard;
+    // Calculate new sort value based on destination position
+    let newSortValue: Big;
+    const destCards = destColumn.cards;
+    
+    if (destination.index === 0) {
+        // Moving to the beginning - use 1 less than first card, or 0 if empty
+        if (destCards.length === 0) {
+            newSortValue = new Big(1);
+        } else {
+            const firstCardSort = destCards[0].sortOrder || new Big(1);
+            newSortValue = firstCardSort.gt(1) ? firstCardSort.minus(1) : new Big(0);
+        }
+    } else {
+        // Moving to any other position - use 1 more than the card above
+        const prevCard = destCards[destination.index - 1];
+        const prevCardSort = prevCard ? (prevCard.sortOrder || new Big(destination.index)) : new Big(destination.index);
+        newSortValue = prevCardSort.plus(1);
+    }
+
+    // Update the card with new sort value
+    const updatedCard = { ...card, sortOrder: newSortValue };
+    
+    const dropDetails: CardDropDetails = {
+        cardId: card.id,
+        oldParentColumnId: source.droppableId,
+        newParentColumnId: destination.droppableId,
+        oldSortValue,
+        newSortValue
+    };
+
+    sourceColumn.cards.splice(source.index, 1);
+    destColumn.cards.splice(destination.index, 0, updatedCard);
+
+    return { updatedBoard: newBoard, dropDetails };
 };
 
 /**
@@ -64,7 +99,7 @@ export const handleSingleBoardDrag = (
 export const handleMultiBoardDrag = (
     boards: MultiBoard[],
     result: DropResult
-): MultiBoard[] | null => {
+): { updatedBoards: MultiBoard[]; dropDetails: CardDropDetails } | null => {
     const { source, destination } = result;
 
     if (!destination) return null;
@@ -83,6 +118,37 @@ export const handleMultiBoardDrag = (
 
     const newBoards = [...boards];
     const card = sourceInfo.column.cards[source.index];
+    const oldSortValue = card.sortOrder || DEFAULT_SORT_ORDER;
+
+    // Calculate new sort value based on destination position
+    let newSortValue: Big;
+    const destCards = destInfo.column.cards;
+    
+    if (destination.index === 0) {
+        // Moving to the beginning - use 1 less than first card, or 0 if empty
+        if (destCards.length === 0) {
+            newSortValue = new Big(1);
+        } else {
+            const firstCardSort = destCards[0].sortOrder || new Big(1);
+            newSortValue = firstCardSort.gt(1) ? firstCardSort.minus(1) : new Big(0);
+        }
+    } else {
+        // Moving to any other position - use 1 more than the card above
+        const prevCard = destCards[destination.index - 1];
+        const prevCardSort = prevCard ? (prevCard.sortOrder || new Big(destination.index)) : new Big(destination.index);
+        newSortValue = prevCardSort.plus(1);
+    }
+
+    // Update the card with new sort value
+    const updatedCard = { ...card, sortOrder: newSortValue };
+    
+    const dropDetails: CardDropDetails = {
+        cardId: card.id,
+        oldParentColumnId: source.droppableId,
+        newParentColumnId: destination.droppableId,
+        oldSortValue,
+        newSortValue
+    };
 
     // Remove card from source
     sourceInfo.column.cards.splice(source.index, 1);
@@ -90,13 +156,13 @@ export const handleMultiBoardDrag = (
     // Add card to destination
     if (source.droppableId === destination.droppableId) {
         // Same column
-        sourceInfo.column.cards.splice(destination.index, 0, card);
+        sourceInfo.column.cards.splice(destination.index, 0, updatedCard);
     } else {
         // Different column
-        destInfo.column.cards.splice(destination.index, 0, card);
+        destInfo.column.cards.splice(destination.index, 0, updatedCard);
     }
 
-    return newBoards;
+    return { updatedBoards: newBoards, dropDetails };
 };
 
 /**
